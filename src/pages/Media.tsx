@@ -1,42 +1,45 @@
 import { Headphones, Mail, Instagram, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const socialLinks = [
-  {
-    title: "Podcast",
-    description: "Lyssna på Noami diskutera romantasy, skrivprocess och bokkaraktärers moraliska gråzoner.",
-    icon: Headphones,
-    link: "#",
-    cta: "Lyssna nu",
-    color: "text-crimson-light",
-  },
-  {
-    title: "Substack",
-    description: "Nyhetsbrev med exklusiva noveller, bakom kulisserna-inblickar och skrivtips.",
-    icon: Mail,
-    link: "#",
-    cta: "Prenumerera",
-    color: "text-gold",
-  },
-  {
-    title: "Instagram",
-    description: "Estetik, bokinspiration och glimtar från skrivlivet. Följ med bakom kulisserna.",
-    icon: Instagram,
-    link: "#",
-    cta: "Följ",
-    color: "text-crimson-light",
-  },
-  {
-    title: "TikTok",
-    description: "BookTok-content, korta berättelser och kreativa skrivutmaningar.",
-    icon: Music,
-    link: "#",
-    cta: "Följ",
-    color: "text-gold",
-  },
-];
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const Media = () => {
+  const { data: c } = useSiteContent("media");
+
+  const socialLinks = [
+    {
+      title: "Podcast",
+      description: c?.podcast_desc ?? "Lyssna på Noami diskutera romantasy, skrivprocess och bokkaraktärers moraliska gråzoner.",
+      icon: Headphones,
+      link: "#",
+      cta: "Lyssna nu",
+      color: "text-crimson-light",
+    },
+    {
+      title: "Substack",
+      description: c?.substack_desc ?? "Nyhetsbrev med exklusiva noveller, bakom kulisserna-inblickar och skrivtips.",
+      icon: Mail,
+      link: "#",
+      cta: "Prenumerera",
+      color: "text-gold",
+    },
+    {
+      title: "Instagram",
+      description: c?.instagram_desc ?? "Estetik, bokinspiration och glimtar från skrivlivet. Följ med bakom kulisserna.",
+      icon: Instagram,
+      link: "#",
+      cta: "Följ",
+      color: "text-crimson-light",
+    },
+    {
+      title: "TikTok",
+      description: c?.tiktok_desc ?? "BookTok-content, korta berättelser och kreativa skrivutmaningar.",
+      icon: Music,
+      link: "#",
+      cta: "Följ",
+      color: "text-gold",
+    },
+  ];
+
   return (
     <section className="min-h-screen py-20 px-6 md:px-16 lg:px-24">
       <div className="max-w-4xl mx-auto">

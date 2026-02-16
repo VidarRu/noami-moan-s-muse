@@ -2,8 +2,10 @@ import heroBg1 from "@/assets/hero-bg-1.jpg";
 import heroBg2 from "@/assets/hero-bg-2.jpg";
 import heroBg3 from "@/assets/hero-bg-3.jpg";
 import { ChevronDown } from "lucide-react";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const Index = () => {
+  const { data: c } = useSiteContent("index");
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background collage */}
@@ -31,13 +33,13 @@ const Index = () => {
       {/* Content */}
       <div className="relative z-10 text-center px-4 animate-fade-in">
         <p className="text-gold font-serif-accent text-lg md:text-xl tracking-[0.3em] uppercase mb-4 opacity-80">
-          Romantasy Author
+          {c?.subtitle ?? "Romantasy Author"}
         </p>
         <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-gold-gradient leading-tight mb-6">
-          Noami Moan
+          {c?.title ?? "Noami Moan"}
         </h1>
         <p className="font-serif-accent text-xl md:text-2xl text-foreground/70 italic max-w-lg mx-auto">
-          Where fantasy meets desire
+          {c?.tagline ?? "Where fantasy meets desire"}
         </p>
 
         {/* Decorative separator */}
