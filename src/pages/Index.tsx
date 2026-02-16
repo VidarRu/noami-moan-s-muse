@@ -1,31 +1,17 @@
 import heroBg1 from "@/assets/hero-bg-1.jpg";
-import heroBg1Hover from "@/assets/hero-bg-1-hover.jpg";
 import heroBg2 from "@/assets/hero-bg-2.jpg";
 import heroBg3 from "@/assets/hero-bg-3.jpg";
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 const Index = () => {
-  const [easterEgg, setEasterEgg] = useState(false);
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background collage */}
       <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-0">
         <div
-          className="col-span-2 row-span-1 relative cursor-pointer"
-          onMouseEnter={() => setEasterEgg(true)}
-          onMouseLeave={() => setEasterEgg(false)}
-        >
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
-            style={{ backgroundImage: `url(${heroBg1})`, opacity: easterEgg ? 0 : 1 }}
-          />
-          <div
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
-            style={{ backgroundImage: `url(${heroBg1Hover})`, opacity: easterEgg ? 1 : 0 }}
-          />
-        </div>
+          className="col-span-2 row-span-1 bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroBg1})` }}
+        />
         <div
           className="bg-cover bg-center"
           style={{ backgroundImage: `url(${heroBg2})` }}
@@ -37,7 +23,7 @@ const Index = () => {
       </div>
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-background/75 pointer-events-none" />
+      <div className="absolute inset-0 bg-background/75" />
 
       {/* Decorative gold line */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
