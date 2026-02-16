@@ -2,8 +2,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Mail, Instagram, Headphones, Music } from "lucide-react";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const Contact = () => {
+  const { data: c } = useSiteContent("contact");
   return (
     <section className="min-h-screen py-20 px-6 md:px-16 lg:px-24">
       <div className="max-w-3xl mx-auto">
@@ -18,14 +20,13 @@ const Contact = () => {
           {/* Contact info */}
           <div className="animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
             <p className="text-foreground/70 font-body leading-relaxed mb-8">
-              Vill du samarbeta, boka en intervju, eller bara säga hej? 
-              Hör av dig via formuläret eller mejla direkt.
+              {c?.intro ?? "Vill du samarbeta, boka en intervju, eller bara säga hej? Hör av dig via formuläret eller mejla direkt."}
             </p>
 
             <div className="space-y-4">
-              <a href="mailto:hello@noamimoan.com" className="flex items-center gap-3 text-foreground/70 hover:text-gold transition-colors font-body">
+              <a href={`mailto:${c?.email ?? "hello@noamimoan.com"}`} className="flex items-center gap-3 text-foreground/70 hover:text-gold transition-colors font-body">
                 <Mail size={18} className="text-gold" />
-                hello@noamimoan.com
+                {c?.email ?? "hello@noamimoan.com"}
               </a>
             </div>
 

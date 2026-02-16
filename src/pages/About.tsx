@@ -1,4 +1,7 @@
+import { useSiteContent } from "@/hooks/useSiteContent";
+
 const About = () => {
+  const { data: c } = useSiteContent("about");
   return (
     <section className="min-h-screen py-20 px-6 md:px-16 lg:px-24">
       <div className="max-w-4xl mx-auto">
@@ -20,17 +23,13 @@ const About = () => {
           {/* Bio */}
           <div className="md:col-span-3 space-y-6 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
             <p className="text-foreground/80 font-body leading-relaxed text-lg">
-              Noami Moan är en författare som rör sig i gränslandet mellan fantasy, romantik och det erotiska. 
-              Med en förkärlek för mörka, förtrollande världar skapar hon berättelser där magi och passion flätas samman.
+              {c?.bio_1 ?? "Noami Moan är en författare som rör sig i gränslandet mellan fantasy, romantik och det erotiska. Med en förkärlek för mörka, förtrollande världar skapar hon berättelser där magi och passion flätas samman."}
             </p>
             <p className="text-foreground/70 font-body leading-relaxed">
-              Inspirerad av nordisk folklore, gotisk romantik och moderna fantasy-epos, utforskar Noami mänskliga 
-              begär genom fantastiska linser. Hennes prosa är lika sensuell som den är magisk, med karaktärer 
-              som kämpar med mörka krafter – både yttre och inre.
+              {c?.bio_2 ?? "Inspirerad av nordisk folklore, gotisk romantik och moderna fantasy-epos, utforskar Noami mänskliga begär genom fantastiska linser. Hennes prosa är lika sensuell som den är magisk, med karaktärer som kämpar med mörka krafter – både yttre och inre."}
             </p>
             <p className="text-foreground/70 font-body leading-relaxed">
-              När hon inte skriver kan man hitta henne med näsan i en bok, vandrandes i skog, eller 
-              diskuterande bokkaraktärers moraliska gråzoner i sin podcast.
+              {c?.bio_3 ?? "När hon inte skriver kan man hitta henne med näsan i en bok, vandrandes i skog, eller diskuterande bokkaraktärers moraliska gråzoner i sin podcast."}
             </p>
           </div>
         </div>
@@ -38,7 +37,7 @@ const About = () => {
         {/* Pull quote */}
         <div className="mt-20 py-12 border-t border-b border-border text-center animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
           <blockquote className="font-serif-accent text-2xl md:text-3xl text-foreground/80 italic max-w-2xl mx-auto">
-            "I mörkret finner vi inte bara rädslor – vi finner begär vi inte visste att vi hade."
+            "{c?.quote ?? "I mörkret finner vi inte bara rädslor – vi finner begär vi inte visste att vi hade."}"
           </blockquote>
           <cite className="block mt-4 text-gold text-sm tracking-widest uppercase font-body not-italic">
             — Noami Moan
