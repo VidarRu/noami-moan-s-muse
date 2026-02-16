@@ -37,7 +37,7 @@ const Index = () => {
       </div>
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-background/75" />
+      <div className="absolute inset-0 bg-background/75 pointer-events-none" />
 
       {/* Decorative gold line */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
