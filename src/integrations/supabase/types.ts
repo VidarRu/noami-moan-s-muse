@@ -56,6 +56,45 @@ export type Database = {
         }
         Relationships: []
       }
+      works: {
+        Row: {
+          cover_url: string | null
+          created_at: string
+          description: string
+          genres: string[]
+          id: string
+          long_description: string
+          sort_order: number
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string
+          genres?: string[]
+          id?: string
+          long_description?: string
+          sort_order?: number
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string
+          genres?: string[]
+          id?: string
+          long_description?: string
+          sort_order?: number
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
