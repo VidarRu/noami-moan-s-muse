@@ -3,10 +3,53 @@ import heroBg2 from "@/assets/hero-bg-2.jpg";
 import heroBg3 from "@/assets/hero-bg-3.jpg";
 import { ChevronDown } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useCallback } from "react";
+
+const TROPES = [
+  "\"There's only one bed…\"",
+  "\"Who did this to you?\"",
+  "\"You're mine.\"",
+  "\"Is that my shirt?\"",
+  "\"Don't look down…\" *looks down*",
+  "\"We need to share body heat.\"",
+  "\"I would burn the world for you.\"",
+];
+
+interface Petal {
+  id: number;
+  x: number;
+  delay: number;
+  duration: number;
+  size: number;
+  rotation: number;
+}
 
 const Index = () => {
   const { data: c } = useSiteContent("index");
+  const [petals, setPetals] = useState<Petal[]>([]);
+  const [tropeText, setTropeText] = useState<string | null>(null);
+
+  const spawnPetals = useCallback(() => {
+    const newPetals: Petal[] = Array.from({ length: 20 }, (_, i) => ({
+      id: Date.now() + i,
+      x: Math.random() * 100,
+      delay: Math.random() * 0.8,
+      duration: 2 + Math.random() * 2,
+      size: 10 + Math.random() * 14,
+      rotation: Math.random() * 360,
+    }));
+    setPetals(newPetals);
+    setTimeout(() => setPetals([]), 5000);
+  }, []);
+
+  const showTrope = useCallback(() => {
+    setTropeText(TROPES[Math.floor(Math.random() * TROPES.length)]);
+  }, []);
+
+  const hideTrope = useCallback(() => {
+    setTropeText(null);
+  }, []);
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background collage */}
@@ -56,10 +99,12 @@ const Index = () => {
           {c?.subtitle ?? "Romantasy Author"}
         </motion.p>
         <motion.h1
-          className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-gold-gradient leading-tight mb-6"
+          className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-gold-gradient leading-tight mb-6 cursor-pointer select-none"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          onClick={spawnPetals}
+          title="✨"
         >
           {c?.title ?? "Naomi Moan"}
         </motion.h1>
@@ -80,10 +125,54 @@ const Index = () => {
           transition={{ duration: 0.6, delay: 1.1 }}
         >
           <div className="w-16 h-px bg-gold/40" />
-          <div className="w-2 h-2 rounded-full bg-crimson" />
+          <div
+            className="relative w-2 h-2 rounded-full bg-crimson cursor-pointer transition-all duration-300 hover:scale-[2.5] hover:shadow-[0_0_12px_hsl(var(--crimson))]"
+            onMouseEnter={showTrope}
+            onMouseLeave={hideTrope}
+          />
           <div className="w-16 h-px bg-gold/40" />
         </motion.div>
+
+        {/* Easter egg: trope quote */}
+        <AnimatePresence>
+          {tropeText && (
+            <motion.p
+              className="font-serif-accent text-sm italic text-crimson/80 mt-2"
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              transition={{ duration: 0.3 }}
+            >
+              {tropeText}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </div>
+
+      {/* Easter egg: falling rose petals */}
+      <AnimatePresence>
+        {petals.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute pointer-events-none z-20"
+            style={{ left: `${p.x}%`, top: -20, fontSize: p.size }}
+            initial={{ opacity: 1, y: -20, rotate: p.rotation }}
+            animate={{
+              y: "110vh",
+              rotate: p.rotation + 360,
+              x: [0, 30, -20, 10],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: p.duration,
+              delay: p.delay,
+              ease: "easeIn",
+            }}
+          >
+            🌹
+          </motion.div>
+        ))}
+      </AnimatePresence>
 
       {/* Scroll indicator */}
       <motion.div
