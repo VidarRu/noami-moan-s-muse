@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogIn, Save, LogOut, Loader2, Plus, Trash2, Eye, EyeOff, Mail } from "lucide-react";
+import { LogIn, Save, LogOut, Loader2, Plus, Trash2, Eye, EyeOff, Mail, Rss, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { WorkEditor, type Work } from "@/components/admin/WorkEditor";
 import { MediaPostEditor, type MediaPost } from "@/components/admin/MediaPostEditor";
@@ -45,6 +45,10 @@ export default function Admin() {
   const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [saving, setSaving] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const [rssFeeds, setRssFeeds] = useState([
+    { url: "", platform: "podcast" },
+  ]);
+  const [importing, setImporting] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -110,6 +114,37 @@ export default function Admin() {
     if (error) toast.error(error.message);
     else { setContactMessages(prev => prev.filter(m => m.id !== id)); toast.success("Meddelande borttaget!"); }
   };
+
+  const handleRssImport = async () => {
+    const validFeeds = rssFeeds.filter(f => f.url.trim());
+    if (validFeeds.length === 0) {
+      toast.error("Ange minst en RSS-URL.");
+      return;
+    }
+    setImporting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("rss-import", {
+        body: { feeds: validFeeds },
+      });
+      if (error) throw error;
+      if (data?.success) {
+        toast.success(`Importerade ${data.imported} inlägg (${data.skipped} överhoppade).`);
+        if (data.errors?.length) {
+          data.errors.forEach((e: string) => toast.error(e));
+        }
+        // Refresh media posts
+        const { data: refreshed } = await supabase.from("media_posts").select("*").order("published_at", { ascending: false, nullsFirst: false });
+        if (refreshed) setMediaPosts(refreshed as MediaPost[]);
+        queryClient.invalidateQueries({ queryKey: ["media_posts"] });
+      } else {
+        toast.error(data?.error || "Import misslyckades.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Import misslyckades.");
+    }
+    setImporting(false);
+  };
+
 
   const handleSaveContent = async (row: ContentRow) => {
     setSaving(row.id);
@@ -291,7 +326,64 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* Media Posts */}
+        {/* RSS Import */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between border-b border-border pb-2 mb-4">
+            <h2 className="font-display text-xl text-foreground flex items-center gap-2">
+              <Rss size={20} className="text-gold" />
+              RSS-import
+            </h2>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRssImport}
+              disabled={importing}
+              className="border-gold/30 text-gold hover:bg-gold/10"
+            >
+              {importing ? <Loader2 className="animate-spin" size={14} /> : <RefreshCw size={14} />}
+              {importing ? "Importerar..." : "Importera nu"}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground font-body mb-4">
+            Ange RSS-flödes-URL:er för att automatiskt importera inlägg till Media-sidan. Dubbletter hoppas över automatiskt.
+          </p>
+          <div className="space-y-3">
+            {rssFeeds.map((feed, i) => (
+              <div key={i} className="flex gap-3 items-center">
+                <select
+                  value={feed.platform}
+                  onChange={e => setRssFeeds(prev => prev.map((f, j) => j === i ? { ...f, platform: e.target.value } : f))}
+                  className="bg-secondary border border-border rounded-md px-3 py-2 text-foreground font-body text-sm w-32"
+                >
+                  <option value="podcast">Podcast</option>
+                  <option value="substack">Substack</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="blog">Blogg</option>
+                </select>
+                <Input
+                  value={feed.url}
+                  onChange={e => setRssFeeds(prev => prev.map((f, j) => j === i ? { ...f, url: e.target.value } : f))}
+                  placeholder="https://example.com/feed.xml"
+                  className="bg-secondary border-border text-foreground font-body flex-1"
+                />
+                {rssFeeds.length > 1 && (
+                  <Button size="icon" variant="ghost" onClick={() => setRssFeeds(prev => prev.filter((_, j) => j !== i))} className="text-muted-foreground hover:text-destructive">
+                    <Trash2 size={16} />
+                  </Button>
+                )}
+              </div>
+            ))}
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setRssFeeds(prev => [...prev, { url: "", platform: "podcast" }])}
+              className="text-muted-foreground hover:text-gold text-xs"
+            >
+              <Plus size={14} /> Lägg till flöde
+            </Button>
+          </div>
+        </div>
+
         <div className="mb-12">
           <div className="flex items-center justify-between border-b border-border pb-2 mb-4">
             <h2 className="font-display text-xl text-foreground">Media-inlägg</h2>
