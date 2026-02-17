@@ -14,6 +14,20 @@ const TROPES = [
   "\"Don't look down…\" *looks down*",
   "\"We need to share body heat.\"",
   "\"I would burn the world for you.\"",
+  "\"You should see the other guy.\"",
+  "\"I'm not jealous.\" *clenches jaw*",
+  "\"Say it again.\" \"Say what?\" \"My name.\"",
+  "\"Touch her and die.\"",
+  "\"I hate you.\" \"No, you don't.\"",
+  "\"You're bleeding.\" \"It's not my blood.\"",
+  "\"Make me.\"",
+  "\"If I kiss you, I won't be able to stop.\"",
+  "\"I've been looking for you my whole life.\"",
+  "\"He's not my mate.\" *narrator: he was*",
+  "\"Stay.\" \"I can't.\" \"Please.\"",
+  "\"Why do you smell so good?\"",
+  "\"I will find you in every lifetime.\"",
+  "\"Enemies to lovers? More like denial to obsession.\"",
 ];
 
 interface Petal {
