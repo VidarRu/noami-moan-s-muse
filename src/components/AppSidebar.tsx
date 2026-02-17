@@ -1,18 +1,32 @@
 import { Home, User, BookOpen, Radio, Mail, Menu, X } from "lucide-react";
-import { NavLink } from "@/components/NavLink";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Hem", url: "/", icon: Home },
-  { title: "Om Författaren", url: "/about", icon: User },
-  { title: "Verk", url: "/works", icon: BookOpen },
-  { title: "Media", url: "/media", icon: Radio },
-  { title: "Kontakt", url: "/contact", icon: Mail },
+  { title: "Hem", anchor: "hem", icon: Home },
+  { title: "Om Författaren", anchor: "om", icon: User },
+  { title: "Verk", anchor: "verk", icon: BookOpen },
+  { title: "Media", anchor: "media", icon: Radio },
+  { title: "Kontakt", anchor: "kontakt", icon: Mail },
 ];
 
 export function AppSidebar() {
   const [expanded, setExpanded] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const scrollToSection = (anchor: string) => {
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        document.getElementById(anchor)?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } else {
+      document.getElementById(anchor)?.scrollIntoView({ behavior: "smooth" });
+    }
+    if (window.innerWidth < 1024) setExpanded(false);
+  };
 
   return (
     <>
@@ -65,15 +79,10 @@ export function AppSidebar() {
         {/* Nav items */}
         <nav className="flex-1 flex flex-col gap-1 px-2 py-4 overflow-hidden">
           {navItems.map((item) => (
-            <NavLink
-              key={item.url}
-              to={item.url}
-              end={item.url === "/"}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-primary transition-colors whitespace-nowrap"
-              activeClassName="bg-sidebar-accent text-primary"
-              onClick={() => {
-                if (window.innerWidth < 1024) setExpanded(false);
-              }}
+            <button
+              key={item.anchor}
+              onClick={() => scrollToSection(item.anchor)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-primary transition-colors whitespace-nowrap cursor-pointer bg-transparent border-none w-full text-left"
             >
               <item.icon size={20} className="shrink-0" />
               <span
@@ -84,7 +93,7 @@ export function AppSidebar() {
               >
                 {item.title}
               </span>
-            </NavLink>
+            </button>
           ))}
         </nav>
 

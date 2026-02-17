@@ -92,7 +92,12 @@ const Index = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 1.5 }}
       >
-        <span className="text-xs tracking-widest uppercase font-body">Utforska</span>
+        <button
+          onClick={() => document.getElementById("om")?.scrollIntoView({ behavior: "smooth" })}
+          className="text-xs tracking-widest uppercase font-body cursor-pointer bg-transparent border-none text-muted-foreground"
+        >
+          Utforska
+        </button>
         <ChevronDown size={20} className="animate-bounce" />
       </motion.div>
 
