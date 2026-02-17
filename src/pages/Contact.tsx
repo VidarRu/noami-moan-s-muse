@@ -28,9 +28,9 @@ const Contact = () => {
             </p>
 
             <div className="space-y-4">
-              <a href={`mailto:${c?.email ?? "hello@noamimoan.com"}`} className="flex items-center gap-3 text-foreground/70 hover:text-gold transition-colors font-body">
+              <a href={`mailto:${c?.email ?? "hello@naomimoan.com"}`} className="flex items-center gap-3 text-foreground/70 hover:text-gold transition-colors font-body">
                 <Mail size={18} className="text-gold" />
-                {c?.email ?? "hello@noamimoan.com"}
+                {c?.email ?? "hello@naomimoan.com"}
               </a>
             </div>
 
@@ -90,7 +90,7 @@ const Contact = () => {
       <ScrollReveal>
         <footer className="mt-24 pt-8 border-t border-border text-center">
           <p className="text-muted-foreground text-xs font-body">
-            © 2025 Noami Moan. Alla rättigheter förbehållna.
+            © 2025 Naomi Moan. Alla rättigheter förbehållna.
           </p>
         </footer>
       </ScrollReveal>

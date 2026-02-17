@@ -61,7 +61,7 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          {c?.title ?? "Noami Moan"}
+          {c?.title ?? "Naomi Moan"}
         </motion.h1>
         <motion.p
           className="font-serif-accent text-xl md:text-2xl text-foreground/70 italic max-w-lg mx-auto"

@@ -40,7 +40,7 @@ const Media = () => {
   const socialLinks = [
     {
       title: "Podcast",
-      description: c?.podcast_desc ?? "Lyssna på Noami diskutera romantasy, skrivprocess och bokkaraktärers moraliska gråzoner.",
+      description: c?.podcast_desc ?? "Lyssna på Naomi diskutera romantasy, skrivprocess och bokkaraktärers moraliska gråzoner.",
       icon: Headphones,
       link: "#",
       cta: "Lyssna nu",
