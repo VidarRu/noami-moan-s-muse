@@ -1,28 +1,19 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogIn, Save, LogOut, Loader2, Plus, Trash2, ImagePlus } from "lucide-react";
+import { LogIn, Save, LogOut, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { WorkEditor, type Work } from "@/components/admin/WorkEditor";
+import { MediaPostEditor, type MediaPost } from "@/components/admin/MediaPostEditor";
 
 type ContentRow = {
   id: string;
   page: string;
   section: string;
   content: string;
-};
-
-type Work = {
-  id: string;
-  title: string;
-  type: string;
-  genres: string[];
-  description: string;
-  long_description: string;
-  cover_url: string | null;
-  sort_order: number;
 };
 
 const PAGE_LABELS: Record<string, string> = {
@@ -41,6 +32,7 @@ export default function Admin() {
   const [authLoading, setAuthLoading] = useState(false);
   const [content, setContent] = useState<ContentRow[]>([]);
   const [works, setWorks] = useState<Work[]>([]);
+  const [mediaPosts, setMediaPosts] = useState<MediaPost[]>([]);
   const [saving, setSaving] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -74,6 +66,8 @@ export default function Admin() {
         .then(({ data }) => { if (data) setContent(data); });
       supabase.from("works").select("*").order("sort_order")
         .then(({ data }) => { if (data) setWorks(data); });
+      supabase.from("media_posts").select("*").order("published_at", { ascending: false, nullsFirst: false })
+        .then(({ data }) => { if (data) setMediaPosts(data as MediaPost[]); });
     }
   }, [isAdmin]);
 
@@ -89,6 +83,7 @@ export default function Admin() {
     await supabase.auth.signOut();
     setContent([]);
     setWorks([]);
+    setMediaPosts([]);
   };
 
   const handleSaveContent = async (row: ContentRow) => {
@@ -99,16 +94,13 @@ export default function Admin() {
     else { toast.success("Sparat!"); queryClient.invalidateQueries({ queryKey: ["site_content"] }); }
   };
 
+  // Works handlers
   const handleSaveWork = async (work: Work) => {
     setSaving(work.id);
     const { error } = await supabase.from("works").update({
-      title: work.title,
-      type: work.type,
-      genres: work.genres,
-      description: work.description,
-      long_description: work.long_description,
-      cover_url: work.cover_url,
-      sort_order: work.sort_order,
+      title: work.title, type: work.type, genres: work.genres,
+      description: work.description, long_description: work.long_description,
+      cover_url: work.cover_url, sort_order: work.sort_order,
     }).eq("id", work.id);
     setSaving(null);
     if (error) toast.error("Kunde inte spara: " + error.message);
@@ -117,12 +109,7 @@ export default function Admin() {
 
   const handleAddWork = async () => {
     const { data, error } = await supabase.from("works").insert({
-      title: "Nytt Verk",
-      type: "Roman",
-      genres: [],
-      description: "",
-      long_description: "",
-      sort_order: works.length,
+      title: "Nytt Verk", type: "Roman", genres: [], description: "", long_description: "", sort_order: works.length,
     }).select().single();
     if (error) toast.error(error.message);
     else if (data) { setWorks([...works, data]); toast.success("Nytt verk tillagt!"); queryClient.invalidateQueries({ queryKey: ["works"] }); }
@@ -138,12 +125,9 @@ export default function Admin() {
     setUploadingId(workId);
     const ext = file.name.split(".").pop();
     const path = `${workId}.${ext}`;
-
     const { error: uploadError } = await supabase.storage.from("covers").upload(path, file, { upsert: true });
     if (uploadError) { toast.error(uploadError.message); setUploadingId(null); return; }
-
     const { data: { publicUrl } } = supabase.storage.from("covers").getPublicUrl(path);
-
     const { error } = await supabase.from("works").update({ cover_url: publicUrl }).eq("id", workId);
     setUploadingId(null);
     if (error) toast.error(error.message);
@@ -154,12 +138,42 @@ export default function Admin() {
     }
   };
 
+  // Media posts handlers
+  const handleSaveMediaPost = async (post: MediaPost) => {
+    setSaving(post.id);
+    const { error } = await supabase.from("media_posts").update({
+      platform: post.platform, title: post.title, description: post.description,
+      url: post.url, image_url: post.image_url, published_at: post.published_at,
+    }).eq("id", post.id);
+    setSaving(null);
+    if (error) toast.error("Kunde inte spara: " + error.message);
+    else { toast.success("Inlägg sparat!"); queryClient.invalidateQueries({ queryKey: ["media_posts"] }); }
+  };
+
+  const handleAddMediaPost = async () => {
+    const { data, error } = await supabase.from("media_posts").insert({
+      platform: "podcast", title: "Nytt inlägg", description: "", url: "",
+    }).select().single();
+    if (error) toast.error(error.message);
+    else if (data) { setMediaPosts([data as MediaPost, ...mediaPosts]); toast.success("Nytt inlägg tillagt!"); queryClient.invalidateQueries({ queryKey: ["media_posts"] }); }
+  };
+
+  const handleDeleteMediaPost = async (id: string) => {
+    const { error } = await supabase.from("media_posts").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { setMediaPosts(mediaPosts.filter(p => p.id !== id)); toast.success("Inlägg borttaget!"); queryClient.invalidateQueries({ queryKey: ["media_posts"] }); }
+  };
+
   const updateContent = (id: string, value: string) => {
     setContent(prev => prev.map(r => r.id === id ? { ...r, content: value } : r));
   };
 
   const updateWork = (id: string, field: keyof Work, value: any) => {
     setWorks(prev => prev.map(w => w.id === id ? { ...w, [field]: value } : w));
+  };
+
+  const updateMediaPost = (id: string, field: keyof MediaPost, value: any) => {
+    setMediaPosts(prev => prev.map(p => p.id === id ? { ...p, [field]: value } : p));
   };
 
   if (loading) {
@@ -236,7 +250,6 @@ export default function Admin() {
               <Plus size={14} /> Lägg till
             </Button>
           </div>
-
           <div className="space-y-8">
             {works.map(work => (
               <WorkEditor
@@ -252,78 +265,32 @@ export default function Admin() {
             ))}
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
 
-function WorkEditor({ work, saving, uploading, onSave, onDelete, onChange, onUploadCover }: {
-  work: Work;
-  saving: boolean;
-  uploading: boolean;
-  onSave: () => void;
-  onDelete: () => void;
-  onChange: (field: keyof Work, value: any) => void;
-  onUploadCover: (file: File) => void;
-}) {
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  return (
-    <div className="border border-border rounded-lg bg-card p-6 space-y-4">
-      <div className="flex items-start gap-4">
-        {/* Cover image */}
-        <div className="w-28 shrink-0">
-          <div
-            className="aspect-[3/4] bg-secondary rounded border border-border flex items-center justify-center overflow-hidden cursor-pointer hover:border-gold/40 transition-colors"
-            onClick={() => fileRef.current?.click()}
-          >
-            {uploading ? (
-              <Loader2 className="animate-spin text-gold" size={20} />
-            ) : work.cover_url ? (
-              <img src={work.cover_url} alt={work.title} className="w-full h-full object-cover" />
-            ) : (
-              <ImagePlus size={20} className="text-muted-foreground" />
+        {/* Media Posts */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between border-b border-border pb-2 mb-4">
+            <h2 className="font-display text-xl text-foreground">Media-inlägg</h2>
+            <Button size="sm" variant="outline" onClick={handleAddMediaPost} className="border-gold/30 text-gold hover:bg-gold/10">
+              <Plus size={14} /> Lägg till
+            </Button>
+          </div>
+          <div className="space-y-6">
+            {mediaPosts.map(post => (
+              <MediaPostEditor
+                key={post.id}
+                post={post}
+                saving={saving === post.id}
+                onSave={() => handleSaveMediaPost(post)}
+                onDelete={() => handleDeleteMediaPost(post.id)}
+                onChange={(field, value) => updateMediaPost(post.id, field, value)}
+              />
+            ))}
+            {mediaPosts.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-8">Inga media-inlägg ännu. Klicka "Lägg till" för att skapa ett.</p>
             )}
           </div>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={e => { if (e.target.files?.[0]) onUploadCover(e.target.files[0]); }} />
-          <p className="text-[10px] text-muted-foreground text-center mt-1">Klicka för omslag</p>
-        </div>
-
-        <div className="flex-1 space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-muted-foreground font-body mb-1 block">Titel</label>
-              <Input value={work.title} onChange={e => onChange("title", e.target.value)} className="bg-secondary border-border text-foreground font-body" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground font-body mb-1 block">Typ</label>
-              <Input value={work.type} onChange={e => onChange("type", e.target.value)} className="bg-secondary border-border text-foreground font-body" />
-            </div>
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground font-body mb-1 block">Genrer (komma-separerade)</label>
-            <Input value={work.genres.join(", ")} onChange={e => onChange("genres", e.target.value.split(",").map(s => s.trim()).filter(Boolean))} className="bg-secondary border-border text-foreground font-body" />
-          </div>
         </div>
       </div>
-
-      <div>
-        <label className="text-xs text-muted-foreground font-body mb-1 block">Kort beskrivning</label>
-        <Textarea value={work.description} onChange={e => onChange("description", e.target.value)} rows={2} className="bg-secondary border-border text-foreground font-body" />
-      </div>
-      <div>
-        <label className="text-xs text-muted-foreground font-body mb-1 block">Lång beskrivning</label>
-        <Textarea value={work.long_description} onChange={e => onChange("long_description", e.target.value)} rows={3} className="bg-secondary border-border text-foreground font-body" />
-      </div>
-
-      <div className="flex justify-end gap-2">
-        <Button size="sm" variant="ghost" onClick={onDelete} className="text-crimson hover:text-crimson-light">
-          <Trash2 size={14} /> Ta bort
-        </Button>
-        <Button size="sm" variant="outline" onClick={onSave} disabled={saving} className="border-gold/30 text-gold hover:bg-gold/10">
-          {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />} Spara
-        </Button>
-      </div>
-    </div>
+    </section>
   );
 }
