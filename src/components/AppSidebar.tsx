@@ -2,6 +2,7 @@ import { Home, User, BookOpen, Radio, Mail, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { useActiveSection } from "@/hooks/useActiveSection";
 
 const navItems = [
   { title: "Hem", anchor: "hem", icon: Home },
@@ -15,6 +16,7 @@ export function AppSidebar() {
   const [expanded, setExpanded] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const activeSection = useActiveSection();
 
   const scrollToSection = (anchor: string) => {
     if (location.pathname !== "/") {
@@ -82,7 +84,12 @@ export function AppSidebar() {
             <button
               key={item.anchor}
               onClick={() => scrollToSection(item.anchor)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sidebar-foreground hover:bg-sidebar-accent hover:text-primary transition-colors whitespace-nowrap cursor-pointer bg-transparent border-none w-full text-left"
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors whitespace-nowrap cursor-pointer bg-transparent border-none w-full text-left",
+                activeSection === item.anchor
+                  ? "bg-sidebar-accent text-primary"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-primary"
+              )}
             >
               <item.icon size={20} className="shrink-0" />
               <span
