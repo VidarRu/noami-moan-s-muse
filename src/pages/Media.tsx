@@ -1,6 +1,8 @@
 import { Headphones, Mail, Instagram, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ScrollReveal";
+import { motion } from "framer-motion";
 
 const Media = () => {
   const { data: c } = useSiteContent("media");
@@ -44,47 +46,52 @@ const Media = () => {
     <section className="min-h-screen py-20 px-6 md:px-16 lg:px-24">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-16 animate-fade-in-up">
-          <p className="text-gold font-serif-accent text-sm tracking-[0.3em] uppercase mb-2">Kanaler</p>
-          <h1 className="font-display text-4xl md:text-5xl text-gold-gradient mb-4">Media & Socialt</h1>
-          <div className="w-24 h-px bg-gold/40" />
-        </div>
+        <ScrollReveal>
+          <div className="mb-16">
+            <p className="text-gold font-serif-accent text-sm tracking-[0.3em] uppercase mb-2">Kanaler</p>
+            <h1 className="font-display text-4xl md:text-5xl text-gold-gradient mb-4">Media & Socialt</h1>
+            <div className="w-24 h-px bg-gold/40" />
+          </div>
+        </ScrollReveal>
 
         {/* Social cards */}
-        <div className="grid sm:grid-cols-2 gap-8">
-          {socialLinks.map((item, i) => (
-            <a
-              key={item.title}
-              href={item.link}
-              className="group block border border-border rounded-lg bg-card p-8 hover:border-gold/30 transition-all duration-300 animate-fade-in-up"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            >
-              <item.icon size={32} className={`${item.color} mb-4`} />
-              <h3 className="font-display text-xl text-foreground mb-2 group-hover:text-gold-gradient transition-colors">
-                {item.title}
-              </h3>
-              <p className="text-foreground/60 font-body text-sm leading-relaxed mb-6">
-                {item.description}
-              </p>
-              <Button
-                variant="outline"
-                className="border-gold/30 text-gold hover:bg-gold/10 hover:text-gold font-body text-xs tracking-wider uppercase"
+        <StaggerContainer className="grid sm:grid-cols-2 gap-8" staggerDelay={0.15}>
+          {socialLinks.map((item) => (
+            <StaggerItem key={item.title}>
+              <motion.a
+                href={item.link}
+                className="group block border border-border rounded-lg bg-card p-8 hover:border-gold/30 transition-colors duration-300"
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
               >
-                {item.cta}
-              </Button>
-            </a>
+                <item.icon size={32} className={`${item.color} mb-4`} />
+                <h3 className="font-display text-xl text-foreground mb-2 group-hover:text-gold-gradient transition-colors">
+                  {item.title}
+                </h3>
+                <p className="text-foreground/60 font-body text-sm leading-relaxed mb-6">
+                  {item.description}
+                </p>
+                <Button
+                  variant="outline"
+                  className="border-gold/30 text-gold hover:bg-gold/10 hover:text-gold font-body text-xs tracking-wider uppercase"
+                >
+                  {item.cta}
+                </Button>
+              </motion.a>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
 
         {/* Podcast embed placeholder */}
-        <div className="mt-16 animate-fade-in-up" style={{ animationDelay: "0.6s" }}>
-          <h2 className="font-display text-2xl text-foreground mb-6">Senaste Avsnittet</h2>
-          <div className="border border-border rounded-lg bg-card p-8 flex items-center justify-center min-h-[120px]">
-            <p className="text-muted-foreground font-body text-sm">
-              Podcast-embed placeholder – byt ut mot din Spotify/Apple Podcast-embed
-            </p>
+        <ScrollReveal delay={0.3}>
+          <div className="mt-16">
+            <h2 className="font-display text-2xl text-foreground mb-6">Senaste Avsnittet</h2>
+            <div className="border border-border rounded-lg bg-card p-8 flex items-center justify-center min-h-[120px]">
+              <p className="text-muted-foreground font-body text-sm">
+                Podcast-embed placeholder – byt ut mot din Spotify/Apple Podcast-embed
+              </p>
+            </div>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   );
