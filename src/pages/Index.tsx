@@ -43,13 +43,13 @@ const Index = () => {
     setTimeout(() => setPetals([]), 5000);
   }, []);
 
-  const showTrope = useCallback(() => {
-    setTropeText(TROPES[Math.floor(Math.random() * TROPES.length)]);
-  }, []);
-
-  const hideTrope = useCallback(() => {
-    setTropeText(null);
-  }, []);
+  const toggleTrope = useCallback(() => {
+    if (tropeText) {
+      setTropeText(null);
+    } else {
+      setTropeText(TROPES[Math.floor(Math.random() * TROPES.length)]);
+    }
+  }, [tropeText]);
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background collage */}
@@ -126,9 +126,8 @@ const Index = () => {
         >
           <div className="w-16 h-px bg-gold/40" />
           <div
-            className="relative w-2 h-2 rounded-full bg-crimson cursor-pointer transition-all duration-300 hover:scale-[2.5] hover:shadow-[0_0_12px_hsl(var(--crimson))]"
-            onMouseEnter={showTrope}
-            onMouseLeave={hideTrope}
+            className="relative w-3 h-3 rounded-full bg-crimson cursor-pointer transition-all duration-300 hover:scale-[3] hover:shadow-[0_0_16px_hsl(var(--crimson))]"
+            onClick={toggleTrope}
           />
           <div className="w-16 h-px bg-gold/40" />
         </motion.div>
