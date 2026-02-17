@@ -33,7 +33,8 @@ const Works = () => {
           </div>
         </ScrollReveal>
 
-        <StaggerContainer className="grid md:grid-cols-2 gap-8" staggerDelay={0.15}>
+        {books.length > 0 && (
+        <StaggerContainer className="grid md:grid-cols-2 gap-8" staggerDelay={0.15} key={books.length}>
           {books.map((book) => (
             <StaggerItem key={book.id}>
               <motion.div
@@ -111,6 +112,7 @@ const Works = () => {
             </StaggerItem>
           ))}
         </StaggerContainer>
+        )}
       </div>
     </section>
   );
