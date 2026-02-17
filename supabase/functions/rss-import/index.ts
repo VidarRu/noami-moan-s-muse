@@ -183,9 +183,24 @@ Deno.serve(async (req) => {
         console.log(`Parsed ${items.length} items from ${feed.platform}`);
 
         for (const item of items) {
+          // Check if already exists
+          if (item.external_id) {
+            const { data: existing } = await adminSupabase
+              .from("media_posts")
+              .select("id")
+              .eq("platform", item.platform)
+              .eq("external_id", item.external_id)
+              .maybeSingle();
+
+            if (existing) {
+              totalSkipped++;
+              continue;
+            }
+          }
+
           const { error: insertError } = await adminSupabase
             .from("media_posts")
-            .upsert(item, { onConflict: "platform,external_id", ignoreDuplicates: true });
+            .insert(item);
 
           if (insertError) {
             console.error(`Insert error: ${insertError.message}`);

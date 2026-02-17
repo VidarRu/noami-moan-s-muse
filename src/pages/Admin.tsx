@@ -70,7 +70,12 @@ export default function Admin() {
         setLoading(false);
       }
     );
-    supabase.auth.getSession();
+    // Fallback: if onAuthStateChange doesn't fire, resolve loading
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        setLoading(false);
+      }
+    });
     return () => subscription.unsubscribe();
   }, []);
 
