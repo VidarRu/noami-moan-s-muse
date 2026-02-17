@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
-import { LogIn, Save, LogOut, Loader2, Plus } from "lucide-react";
+import { LogIn, Save, LogOut, Loader2, Plus, Trash2, Eye, EyeOff, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { WorkEditor, type Work } from "@/components/admin/WorkEditor";
 import { MediaPostEditor, type MediaPost } from "@/components/admin/MediaPostEditor";
@@ -14,6 +14,15 @@ type ContentRow = {
   page: string;
   section: string;
   content: string;
+};
+
+type ContactMessage = {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  read: boolean;
+  created_at: string;
 };
 
 const PAGE_LABELS: Record<string, string> = {
@@ -33,6 +42,7 @@ export default function Admin() {
   const [content, setContent] = useState<ContentRow[]>([]);
   const [works, setWorks] = useState<Work[]>([]);
   const [mediaPosts, setMediaPosts] = useState<MediaPost[]>([]);
+  const [contactMessages, setContactMessages] = useState<ContactMessage[]>([]);
   const [saving, setSaving] = useState<string | null>(null);
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -68,6 +78,8 @@ export default function Admin() {
         .then(({ data }) => { if (data) setWorks(data); });
       supabase.from("media_posts").select("*").order("published_at", { ascending: false, nullsFirst: false })
         .then(({ data }) => { if (data) setMediaPosts(data as MediaPost[]); });
+      supabase.from("contact_messages").select("*").order("created_at", { ascending: false })
+        .then(({ data }) => { if (data) setContactMessages(data as ContactMessage[]); });
     }
   }, [isAdmin]);
 
@@ -84,6 +96,19 @@ export default function Admin() {
     setContent([]);
     setWorks([]);
     setMediaPosts([]);
+    setContactMessages([]);
+  };
+
+  const handleToggleRead = async (msg: ContactMessage) => {
+    const { error } = await supabase.from("contact_messages").update({ read: !msg.read }).eq("id", msg.id);
+    if (error) toast.error(error.message);
+    else setContactMessages(prev => prev.map(m => m.id === msg.id ? { ...m, read: !m.read } : m));
+  };
+
+  const handleDeleteMessage = async (id: string) => {
+    const { error } = await supabase.from("contact_messages").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { setContactMessages(prev => prev.filter(m => m.id !== id)); toast.success("Meddelande borttaget!"); }
   };
 
   const handleSaveContent = async (row: ContentRow) => {
@@ -287,6 +312,51 @@ export default function Admin() {
             ))}
             {mediaPosts.length === 0 && (
               <p className="text-sm text-muted-foreground text-center py-8">Inga media-inlägg ännu. Klicka "Lägg till" för att skapa ett.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Contact Messages */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between border-b border-border pb-2 mb-4">
+            <h2 className="font-display text-xl text-foreground flex items-center gap-2">
+              <Mail size={20} className="text-gold" />
+              Kontaktmeddelanden
+              {contactMessages.filter(m => !m.read).length > 0 && (
+                <span className="text-xs bg-crimson text-accent-foreground px-2 py-0.5 rounded-full">
+                  {contactMessages.filter(m => !m.read).length} nya
+                </span>
+              )}
+            </h2>
+          </div>
+          <div className="space-y-3">
+            {contactMessages.map(msg => (
+              <div key={msg.id} className={`p-4 rounded-lg border ${msg.read ? 'border-border bg-secondary/50' : 'border-gold/30 bg-secondary'}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-body font-medium text-foreground">{msg.name}</span>
+                      <a href={`mailto:${msg.email}`} className="text-xs text-gold hover:underline font-body">{msg.email}</a>
+                      {!msg.read && <span className="w-2 h-2 rounded-full bg-crimson shrink-0" />}
+                    </div>
+                    <p className="text-foreground/70 font-body text-sm whitespace-pre-wrap">{msg.message}</p>
+                    <p className="text-xs text-muted-foreground mt-2 font-body">
+                      {new Date(msg.created_at).toLocaleString("sv-SE")}
+                    </p>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <Button size="icon" variant="ghost" onClick={() => handleToggleRead(msg)} className="text-muted-foreground hover:text-gold" title={msg.read ? "Markera som oläst" : "Markera som läst"}>
+                      {msg.read ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </Button>
+                    <Button size="icon" variant="ghost" onClick={() => handleDeleteMessage(msg.id)} className="text-muted-foreground hover:text-destructive" title="Ta bort">
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {contactMessages.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-8">Inga kontaktmeddelanden ännu.</p>
             )}
           </div>
         </div>
