@@ -27,10 +27,10 @@ const About = () => {
           <ScrollReveal variant="slideRight" delay={0.3} className="md:col-span-3">
             <div className="space-y-6">
               <p className="text-foreground/80 font-body leading-relaxed text-lg">
-                {c?.bio_1 ?? "Noami Moan är en författare som rör sig i gränslandet mellan fantasy, romantik och det erotiska. Med en förkärlek för mörka, förtrollande världar skapar hon berättelser där magi och passion flätas samman."}
+                {c?.bio_1 ?? "Naomi Moan är en författare som rör sig i gränslandet mellan fantasy, romantik och det erotiska. Med en förkärlek för mörka, förtrollande världar skapar hon berättelser där magi och passion flätas samman."}
               </p>
               <p className="text-foreground/70 font-body leading-relaxed">
-                {c?.bio_2 ?? "Inspirerad av nordisk folklore, gotisk romantik och moderna fantasy-epos, utforskar Noami mänskliga begär genom fantastiska linser. Hennes prosa är lika sensuell som den är magisk, med karaktärer som kämpar med mörka krafter – både yttre och inre."}
+                {c?.bio_2 ?? "Inspirerad av nordisk folklore, gotisk romantik och moderna fantasy-epos, utforskar Naomi mänskliga begär genom fantastiska linser. Hennes prosa är lika sensuell som den är magisk, med karaktärer som kämpar med mörka krafter – både yttre och inre."}
               </p>
               <p className="text-foreground/70 font-body leading-relaxed">
                 {c?.bio_3 ?? "När hon inte skriver kan man hitta henne med näsan i en bok, vandrandes i skog, eller diskuterande bokkaraktärers moraliska gråzoner i sin podcast."}
@@ -46,7 +46,7 @@ const About = () => {
               "{c?.quote ?? "I mörkret finner vi inte bara rädslor – vi finner begär vi inte visste att vi hade."}"
             </blockquote>
             <cite className="block mt-4 text-gold text-sm tracking-widest uppercase font-body not-italic">
-              — Noami Moan
+              — Naomi Moan
             </cite>
           </div>
         </ScrollReveal>
