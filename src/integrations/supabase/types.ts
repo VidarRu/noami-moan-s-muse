@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      media_posts: {
+        Row: {
+          created_at: string
+          description: string
+          external_id: string | null
+          id: string
+          image_url: string | null
+          metadata: Json | null
+          platform: string
+          published_at: string | null
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          external_id?: string | null
+          id?: string
+          image_url?: string | null
+          metadata?: Json | null
+          platform: string
+          published_at?: string | null
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          external_id?: string | null
+          id?: string
+          image_url?: string | null
+          metadata?: Json | null
+          platform?: string
+          published_at?: string | null
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       site_content: {
         Row: {
           content: string
