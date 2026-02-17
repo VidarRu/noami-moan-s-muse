@@ -31,12 +31,12 @@ const Index = () => {
   const [tropeText, setTropeText] = useState<string | null>(null);
 
   const spawnPetals = useCallback(() => {
-    const newPetals: Petal[] = Array.from({ length: 20 }, (_, i) => ({
+    const newPetals: Petal[] = Array.from({ length: 40 }, (_, i) => ({
       id: Date.now() + i,
       x: Math.random() * 100,
-      delay: Math.random() * 0.8,
-      duration: 2 + Math.random() * 2,
-      size: 10 + Math.random() * 14,
+      delay: Math.random() * 1.2,
+      duration: 2.5 + Math.random() * 3,
+      size: 20 + Math.random() * 24,
       rotation: Math.random() * 360,
     }));
     setPetals(newPetals);
@@ -137,7 +137,7 @@ const Index = () => {
         <AnimatePresence>
           {tropeText && (
             <motion.p
-              className="font-serif-accent text-sm italic text-crimson/80 mt-2"
+              className="font-serif-accent text-2xl md:text-3xl italic text-crimson/90 mt-4"
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
