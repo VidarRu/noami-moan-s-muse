@@ -170,7 +170,7 @@ const Contact = () => {
       <ScrollReveal>
         <footer className="mt-24 pt-8 border-t border-border text-center">
           <p className="text-muted-foreground text-xs font-body">
-            © 2025 Naomi Moan. Alla rättigheter förbehållna.
+            © 2026 Naomi Moan. Alla rättigheter förbehållna.
           </p>
         </footer>
       </ScrollReveal>
