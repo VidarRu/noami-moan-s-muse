@@ -15,7 +15,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/noami-moan-s-muse">
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<HomePage />} />
